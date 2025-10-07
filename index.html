@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contentsquare Data Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Secure data table viewer with interactive search, sort, and filtering capabilities">
+    <meta name="keywords" content="data, table, analytics, contentsquare">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginContainer" class="login-container" role="main">
+        <div class="login-card">
+            <div class="logo-container">
+                <div class="logo-square"></div>
+                <h1 class="brand-title">Data Viewer</h1>
+            </div>
+            <form id="loginForm" class="login-form" novalidate>
+                <div class="input-group">
+                    <label for="password" class="input-label">Enter Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="input-field" 
+                        placeholder="Password"
+                        required
+                        aria-describedby="password-error"
+                        autocomplete="current-password"
+                    >
+                    <div id="password-error" class="error-message" role="alert" aria-live="polite"></div>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span>Access Data</span>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContainer" class="app-container hidden" role="main">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-square small"></div>
+                    <h1 class="app-title">Data Viewer</h1>
+                </div>
+                <button id="logoutBtn" class="logout-btn" aria-label="Logout">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16,17 21,12 16,7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <div class="controls-grid">
+                <div class="search-container">
+                    <label for="searchInput" class="control-label">Search Data</label>
+                    <div class="search-input-wrapper">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input" 
+                            placeholder="Search across all columns..."
+                            aria-label="Search data table"
+                        >
+                    </div>
+                </div>
+                
+                <div class="filter-container">
+                    <label for="columnFilter" class="control-label">Filter by Column</label>
+                    <select id="columnFilter" class="filter-select" aria-label="Select column to filter">
+                        <option value="">All Columns</option>
+                    </select>
+                </div>
+
+                <div class="entries-container">
+                    <label for="entriesSelect" class="control-label">Show Entries</label>
+                    <select id="entriesSelect" class="entries-select" aria-label="Number of entries per page">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="-1">All</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table Container -->
+        <div class="table-container">
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading data...</p>
+            </div>
+            
+            <div id="errorMessage" class="error-container hidden" role="alert">
+                <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <p id="errorText">Failed to load data. Please check if data_source.csv exists.</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="dataTable" class="data-table" role="table">
+                    <thead id="tableHead" role="rowgroup">
+                        <!-- Dynamic headers will be inserted here -->
+                    </thead>
+                    <tbody id="tableBody" role="rowgroup">
+                        <!-- Dynamic data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationContainer" class="pagination-container">
+            <div class="pagination-info">
+                <span id="paginationInfo">Showing 0 to 0 of 0 entries</span>
+            </div>
+            <div class="pagination-controls">
+                <button id="prevBtn" class="pagination-btn" disabled aria-label="Previous page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15,18 9,12 15,6"/>
+                    </svg>
+                </button>
+                <div id="pageNumbers" class="page-numbers"></div>
+                <button id="nextBtn" class="pagination-btn" disabled aria-label="Next page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9,18 15,12 9,6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2025 Contentsquare Data Viewer. Secure data access with advanced filtering and search capabilities.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
